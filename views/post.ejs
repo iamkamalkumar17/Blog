@@ -1,0 +1,9 @@
+<%- include('partials/header') %>
+<% userPost.forEach(post => { %>
+    <h2><%= post.title %> </h2>
+    <p><%= post.content %></p>
+<% }); %>
+
+<a href="/compose">compose</a>
+<a href="/logout">logout</a>
+<%- include('partials/footer') %>
