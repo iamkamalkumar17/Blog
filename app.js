@@ -15,8 +15,6 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-var userId = 0;
-
 //starting of session
 app.use(session({
     secret: "our little secret",
@@ -34,7 +32,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/test").then(()=>{
 
 const postSchema = new mongoose.Schema({
     title: String,
-    content: String
+    content: String,
+    postNum: Number,
+    time: String
 });
 const userSchema = new mongoose.Schema({
     username: String,
@@ -48,23 +48,18 @@ userSchema.plugin(findOrCreate);
 const User = mongoose.model("User", userSchema);
 
 passport.use(User.createStrategy());
-// const newUser = new User({
-//     username: "kamal kumar",
-//     password: "password",
-//     post: [{
-//         title: "title 1",
-//         content: "content 1"
-//     }, {
-//         title: "title 2",
-//         content: "content 2"
-//     }]
-// });
-// newUser.post.push({
-//     title: "title 5",
-//     content: "content 5"
-// })
 
-// newUser.save();
+const defaultUser = new User({
+    username: "admin",
+    passport: "password",
+    post: [{
+        title: "adminTitle",
+        content: "adminContent",
+        postNum: 0
+    }]
+});
+// defaultUser.save();
+
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(function(user, cb) {
     process.nextTick(function() {
@@ -96,30 +91,9 @@ passport.use(new GoogleStrategy({
 ));
 
 const Post = mongoose.model("Post", postSchema);
-// const newPost = new Post({
-//     title: "title 3",
-//     content: "content 3"
-// });
-const noContent = new Post({
-    title: "no content",
-    content: "nothing to show sorry"
-});
-var nothing = [noContent];
-User.findOne({username: "kamal kumar"}).then((foundUser)=> {
-    // totalPost = foundUser.post;
-    // totalPost.push(newPost);
-    // console.log(totalPost);
-    userId = foundUser._id;
-    // User.updateOne({username: "kamal kumar"}, {$set: {post: totalPost}}).then(()=>{console.log("done")});
-})
-app.get("/kamal", (req, res) => {
-    User.findOne({_id: userId}).then((foundUser) => {
-        
-        res.render("post", {userPost: foundUser.post});
-        
-    })
-})
-////////////register////////////
+
+
+//////////// REGISTER & LOGIN////////////
 app.post("/register", (req, res) => {
     User.register({username: req.body.username}, req.body.password, function(err, user) {
         if(err) {
@@ -127,16 +101,14 @@ app.post("/register", (req, res) => {
             res.redirect("/register");
         } else {
             passport.authenticate("local")(req, res, function(){
-                // res.redirect("/secrets");
                 User.findOne({username: req.body.username}).then((foundUser)=> {
-                    res.send(foundUser.post);
+                    res.redirect("/post");
                 })
             })
         }
     })
     
 });
-//////////////login route/////////
 
 app.post("/login", (req,res)=>{
     const user = new User({
@@ -149,25 +121,121 @@ app.post("/login", (req,res)=>{
         } else {
             passport.authenticate("local")(req, res, function(){
                 User.findOne({username: req.body.username}).then((foundUser)=> {
-                    
-                    // userId = foundUser._id;
-                    // res.send(userId);
                     res.redirect("/post")
                 })
             })
         }
     })
+});
+
+////////////   SPECIFIC POSTS///////
+
+app.get("/post/:postNum", (req,res)=>{
+    const requestedPostNum = req.params.postNum;
+    if(req.user) {
+        User.findOne({username: req.user.username}).then((foundUser)=> {
+            var totalPost = foundUser.post;
+        
+            for(var i = 0; i<totalPost.length; i++) {
+                if(totalPost[i].postNum == requestedPostNum) {
+                    
+                    res.render("one", {post: totalPost[i]});
+                    break;
+                } 
+            }
+        })
+    } else {
+        res.redirect("/home");
+    }   
+  })
+
+  app.get("/del/:postNum", (req, res) => {
+    const requestedPostNum = req.params.postNum;
+    if(req.user) {
+        
+        User.findOne({username: req.user.username}).then((foundUser)=> {
+            var totalPost = foundUser.post;
+            
+            var afterDelete = [];
+        
+            for(var i = 0; i<totalPost.length; i++) {
+                if(totalPost[i].postNum == requestedPostNum) continue;
+                afterDelete.push(totalPost[i]);
+            }
+            User.updateOne({username: req.user.username}, {$set: {post: afterDelete}}).then(()=>{console.log("done")});
+            res.redirect("/post");
+        })
+    } else {
+        res.redirect("/home");
+    }
 })
-app.post("/submit", (req, res) => {
+
+app.get("/edit/:postNum", (req, res)=> {
+
+    const requestedPostNum = req.params.postNum;
+    if(req.user) {
+        
+        User.findOne({username: req.user.username}).then((foundUser)=> {
+            var totalPost = foundUser.post;
+                    
+            for(var i = 0; i<totalPost.length; i++) {
+                if(totalPost[i].postNum == requestedPostNum) {
+                    res.render("edit", {title: totalPost[i].title, content: totalPost[i].content, postNum: requestedPostNum})
+                }
+            }
+        })
+    } else {
+        res.redirect("/home");
+    }
+})
+app.post("/edit/:postNum", (req, res) => {
+    const requestedPostNum = req.params.postNum;
+    const num = Math.ceil(Math.random() * 5000000000000000);
+    const toPrint = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}: ${new Date().getHours()}:${new Date().getMinutes()}`
+
    
     const newPost = new Post({
         title: req.body.postTitle,
-        content: req.body.postBody
+        content: req.body.postBody,
+        postNum: num,
+        time: toPrint
+    });
+    if(req.user) {        
+        User.findOne({username: req.user.username}).then((foundUser)=> {
+            var totalPost = foundUser.post;
+            
+            var afterDelete = [];
+        
+            for(var i = 0; i<totalPost.length; i++) {
+                if(totalPost[i].postNum == requestedPostNum) continue;
+                afterDelete.push(totalPost[i]);                
+            }
+            if(newPost.title != "" && newPost.content != "") afterDelete.push(newPost);
+           
+            User.updateOne({username: req.user.username}, {$set: {post: afterDelete}}).then(()=>{console.log("done")});
+            res.redirect("/post");
+        })
+    } else {
+        res.redirect("/home");
+    }
+})
+
+/////////////// FOR ALL/////////////
+app.post("/submit", (req, res) => {
+
+    const num = Math.ceil(Math.random() * 5000000000000000);
+    const toPrint = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}: ${new Date().getHours()}:${new Date().getMinutes()}`
+   
+    const newPost = new Post({
+        title: req.body.postTitle,
+        content: req.body.postBody,
+        postNum: num,
+        time: toPrint
     });
     if(req.user) {
         User.findOne({username: req.user.username}).then((foundUser)=> {
             var totalPost = foundUser.post;
-            totalPost.push(newPost);
+            if(newPost.title != "" && newPost.content != "") totalPost.push(newPost);
             console.log(totalPost);
             // userId = foundUser._id;
             User.updateOne({username: req.user.username}, {$set: {post: totalPost}}).then(()=>{console.log("done")});
@@ -175,7 +243,7 @@ app.post("/submit", (req, res) => {
             res.redirect("/post");
         })
     } else {
-        res.send("no user");
+        res.redirect("/home");
     }
 });
 app.get("/post", (req, res) => {
@@ -187,16 +255,14 @@ app.get("/post", (req, res) => {
             
         });
     } else {
-        res.redirect("/login")
-        // res.send("no user");
+        res.redirect("/home");
     }
 })
 
 
 
-//////////////LOGIN//////////////
+
 app.get("/user", (req, res)=> {
-    // res.send(req.user.id);
     
     if(req.user) {
     User.findOne({username: req.user.username}).then((foundUser)=> {
@@ -207,6 +273,11 @@ app.get("/user", (req, res)=> {
     }
 })
 
+
+/////////////////// GET///////////////
+app.get("/home", (req, res) => {
+    res.render("home");
+})
 app.get("/login", (req, res)=> {
     res.render("login");
 });
@@ -227,11 +298,26 @@ app.get('/logout', function(req, res, next){
       res.redirect('/');
     });
   });
+
+/////////////GOOGLE AUTHENTICATION /////////////
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
+
+app.get('/auth/google/secrets', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect secrets.
+    res.redirect('/post');
+});
+
+
 ////////////////home/////////
 app.get("/", (req, res)=> {
-    res.render("home")
+    res.redirect("/home");
 });
 
 app.listen(port, ()=>{
     console.log(`app runs at ${port}`);
 })
+
+

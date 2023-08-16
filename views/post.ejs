@@ -1,9 +1,14 @@
 <%- include('partials/header') %>
-<% userPost.forEach(post => { %>
-    <h2><%= post.title %> </h2>
-    <p><%= post.content %></p>
-<% }); %>
 
+<% for(var i = userPost.length-1; i>=0;i--) {%>
+    <h2><%= userPost[i].title %> </h2>
+    <p><%= userPost[i].time %></p>
+    <p><%= userPost[i].content.substring(0, 150) %> ... <a href="post/<%= userPost[i].postNum %>">Read More</a></p>
+    
+    <br>
+<% } %>
+<br>
+<br>
 <a href="/compose">compose</a>
 <a href="/logout">logout</a>
 <%- include('partials/footer') %>
