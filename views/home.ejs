@@ -1,5 +1,31 @@
 <%- include('partials/header') %>
-<h1>Welcome to the blog</h1>
-<h2><a href="/register">Register</a></h2>
-<h2><a href="/login">Login</a></h2>
+
+<header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+      <div class="col-md-3 mb-2 mb-md-0">
+        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <!-- <img src="../public/images/favFinal.png" alt="logo"> -->
+          <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap">
+            <img class="bi" width="40" height="32" src="/images/favFinal.png" alt="logo">
+        </svg>
+        </a>
+      </div>
+
+      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
+        <li><a href="#" class="nav-link px-2">Features</a></li>
+        <li><a href="/post" class="nav-link px-2">Posts</a></li>
+        <li><a href="#" class="nav-link px-2">FAQs</a></li>
+        <li><a href="#" class="nav-link px-2">About</a></li>
+      </ul>
+
+      <div class="col-md-3 text-end">
+        <button onclick="document.location='/login'" type="button" class="btn btn-outline-primary me-2">Login</button>
+        <button onclick="document.location='/register'" type="button" class="btn btn-primary">Sign-up</button>
+      </div>
+</header>
+
+<div class="container">
+<h1 style="text-align: center;">Welcome to the blog</h1>
+
+</div>
 <%- include('partials/footer') %>

@@ -1,5 +1,4 @@
-<%- include('partials/header') %>
-
+<%- include('partials/header') -%>
 <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
     <div class="col-md-3 mb-2 mb-md-0">
       <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
@@ -19,21 +18,22 @@
     </ul>
 
     <div class="col-md-3 text-end">
-      <button onclick="document.location='/logout'" type="button" class="btn btn-outline-primary me-2">Log Out</button>
+      <!-- <button onclick="document.location='/logout'" type="button" class="btn btn-outline-primary me-2">Log Out</button> -->
       
-      <button onclick="document.location='/compose'" type="button" class="btn btn-primary">Compose</button>
+      <button onclick="document.location='/post'" type="button" class="btn btn-primary">Back</button>
     </div>
 </header>
 
 <div class="container">
-<% for(var i = userPost.length-1; i>=0;i--) {%>
-    <h2><%= userPost[i].title %> </h2>
-    <p class="postTime"><%= userPost[i].time %></p>
-    <p class="postContent"><%= userPost[i].content.substring(0, 150) %> ... <a href="post/<%= userPost[i].postNum %>">Read More</a></p>
+    <h1><%= post.title %></h1>
+    <p><%= post.time %></p>
+    <p class="postContent" style="font-size: large;"><%= post.content %></p>
     
     <br>
-<% } %>
-<br>
-<br>
+    
+    <button onclick="document.location='/del/<%= post.postNum %>'" type="button" class="btn btn-outline-primary me-2">Delete</button>
+          
+    <button onclick="document.location='/edit/<%= post.postNum %>'" type="button" class="btn btn-primary">Edit</button>
 </div>
-<%- include('partials/footer') %>
+
+    

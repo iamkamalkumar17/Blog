@@ -1,0 +1,19 @@
+.container{
+    margin-top: 10vh;
+    width: 80vw;
+}
+h1, h2{
+    font-family: 'Caprasimo', cursive;
+}
+.postContent{
+    font-size: 1.3rem;
+}
+.postTime{
+    font-size: 0.8rem;
+}
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;            /* Footer height */
+  }

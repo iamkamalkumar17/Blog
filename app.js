@@ -139,7 +139,7 @@ app.get("/post/:postNum", (req,res)=>{
             for(var i = 0; i<totalPost.length; i++) {
                 if(totalPost[i].postNum == requestedPostNum) {
                     
-                    res.render("one", {post: totalPost[i]});
+                    res.render("selectPost", {post: totalPost[i]});
                     break;
                 } 
             }
