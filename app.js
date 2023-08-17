@@ -26,8 +26,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-mongoose.connect("mongodb://127.0.0.1:27017/test").then(()=>{
-    console.log("mongodb connected at port 27017");
+// mongoose.connect("mongodb://127.0.0.1:27017/test").then(()=>{
+//     console.log("mongodb connected at port 27017");
+// });
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.uqx03df.mongodb.net/todolistDB`).then(() => {
+  console.log("mongodb connected at port 27017");
 });
 
 const postSchema = new mongoose.Schema({
