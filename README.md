@@ -1,9 +1,17 @@
-# BLOG
+# ONLINE JOURNAL
 
 The Online Journal Website is a feature-rich web application developed using Node.js, Express, and MongoDB.
 It includes user authentication powered by Passport.js and supports full CRUD (Create, Read, Update, Delete) 
 functionality for journal entries.
+
+## Have a try
+
 [OnlineJournal](https://https://onlinejournal.onrender.com/home)
+* visit the site
+* make a new account
+* make your journal entry
+  
+
 
 ## Features
 
