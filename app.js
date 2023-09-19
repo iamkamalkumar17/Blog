@@ -302,6 +302,9 @@ app.get('/logout', function(req, res, next){
       res.redirect('/');
     });
   });
+app.get('/faq', (req, res) => {
+    res.render("FAQ.ejs");
+})
 
 /////////////GOOGLE AUTHENTICATION /////////////
 app.get('/auth/google',
