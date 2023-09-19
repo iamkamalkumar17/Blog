@@ -30,7 +30,7 @@ app.use(passport.session());
 //     console.log("mongodb connected at port 27017");
 // });
 mongoose.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.uqx03df.mongodb.net/todolistDB`).then(() => {
-  console.log("mongodb connected at port 27017");
+  console.log("Database Connected Succefully");
 });
 
 const postSchema = new mongoose.Schema({
@@ -52,15 +52,15 @@ const User = mongoose.model("User", userSchema);
 
 passport.use(User.createStrategy());
 
-const defaultUser = new User({
-    username: "admin",
-    passport: "password",
-    post: [{
-        title: "adminTitle",
-        content: "adminContent",
-        postNum: 0
-    }]
-});
+// const defaultUser = new User({
+//     username: "admin",
+//     passport: "password",
+//     post: [{
+//         title: "adminTitle",
+//         content: "adminContent",
+//         postNum: 0
+//     }]
+// });
 // defaultUser.save();
 
 // use static serialize and deserialize of model for passport session support
@@ -215,11 +215,12 @@ app.post("/edit/:postNum", (req, res) => {
             }
             if(newPost.title != "" && newPost.content != "") afterDelete.push(newPost);
            
-            User.updateOne({username: req.user.username}, {$set: {post: afterDelete}}).then(()=>{console.log("done")});
+            User.updateOne({username: req.user.username}, {$set: {post: afterDelete}}).then(()=>{console.log("Update completed successfully")});
             res.redirect("/post");
         })
     } else {
         res.redirect("/home");
+        console.log("could not update the post, most probably because user is not signed in")
     }
 })
 
